@@ -1,7 +1,0 @@
-[0m[[0m[31merror[0m] [0m[0m/home/alejandro/IdeaProjects/SparkSQL/src/main/scala/SparkSQL.scala:25:15: value $ is not a member of StringContext[0m
-[0m[[0m[31merror[0m] [0m[0m    df.filter($"vmed" > 20, $"vmed" < 70).show()[0m
-[0m[[0m[31merror[0m] [0m[0m              ^[0m
-[0m[[0m[31merror[0m] [0m[0m/home/alejandro/IdeaProjects/SparkSQL/src/main/scala/SparkSQL.scala:25:29: value $ is not a member of StringContext[0m
-[0m[[0m[31merror[0m] [0m[0m    df.filter($"vmed" > 20, $"vmed" < 70).show()[0m
-[0m[[0m[31merror[0m] [0m[0m                            ^[0m
-[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

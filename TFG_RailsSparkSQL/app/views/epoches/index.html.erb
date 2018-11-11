@@ -1,0 +1,36 @@
+<h1 class="jumbotron-heading">Seleccione una época</h1>
+<p class="lead text-muted">¡Buscaremos en nuestra base de datos!</p>
+<div class="alert alert-info" role="alert">
+  Actualmente sólo hay registros para 2018 hasta septiembre.
+</div>
+<%= form_tag({action: "map", controller: "epoches"}, method: "post") do %>
+  <div class="form-group">
+    <label>Fecha inicio</label>
+    <input style="width: 300px; margin: 0 auto;" type="datetime-local" name="startDate" class="form-control" value="<%= @startDateRandom %>"
+           min="2018-01-01T00:00" max="2018-09-30T00:00">
+  </div>
+  <div class="form-group">
+    <label>Fecha fin</label>
+    <input style="width: 300px; margin: 0 auto;" type="datetime-local" name="endDate" class="form-control" value="<%= @endDateRandom %>"
+           min="2018-01-01T00:00" max="2018-09-30T00:00">
+  </div>
+  <p>
+    <button type="submit" class="btn btn-primary my-2" data-toggle="modal" data-target="#exampleModal">
+      Buscar
+    </button>
+  </p>
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+<% end %>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Calculando resultados</h5>
+      </div>
+      <div class="modal-body">
+        <p>Espere por favor...</p>
+        <p><%= image_tag('loading.gif') %></p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ident: MyString
+  date: MyString
+  element: MyString
+  vmed: MyString
+
+two:
+  ident: MyString
+  date: MyString
+  element: MyString
+  vmed: MyString
