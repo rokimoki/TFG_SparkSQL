@@ -1,7 +1,3 @@
-require 'test_helper'
-
-class EpochTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
-end
+# Time-stamp: "2016-07-25 06:40:50 MDT"
+$Text::Unidecode::Char[0x0e] = [
+'[?]', 'k', 'kh', 'kh', 'kh', 'kh', 'kh', 'ng'
