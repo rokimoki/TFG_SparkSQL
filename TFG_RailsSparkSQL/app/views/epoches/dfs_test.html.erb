@@ -1,2 +1,15 @@
 <p>Test hecho</p>
+<p>
+  Speed lenght: <%= @speeds.count %>
+</p>
+<% @speeds.each do | speed | %>
+  <p>
+    ID: <%= speed[0] %> Elem: <%= speed[1] %> VMed: <%= speed[4] %>
+  </p>
+<% end %>
+<br>
+<pre><%= @extraction %></pre>
+<br>
+<pre><%= @deletion %></pre>
+<br>
 <pre><%= @execution %></pre>

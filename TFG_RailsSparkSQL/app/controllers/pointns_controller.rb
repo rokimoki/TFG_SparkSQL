@@ -1,5 +1,4 @@
 require 'csv'
-require 'pp'
 class PointnsController < ApplicationController
   def insert
     if request.method == "POST"

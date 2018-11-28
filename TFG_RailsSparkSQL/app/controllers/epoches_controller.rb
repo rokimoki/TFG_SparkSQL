@@ -6,20 +6,22 @@ class EpochesController < ApplicationController
   end
 
   def map
-    # spark-submit --class SparkSQL --name "EpochSelector" /home/alejandro/Documentos/TFG_SparkSQL/target/scala-2.11/tfg_sparksql_2.11-0.1.jar
-    # spark-submit --master yarn --deply-mode cluster --class SparkSQL --name "EpochSelector" /home/alopez/proyecto/tfg_sparksql_2.11-0.1.jar
-    @executed = 0
+    # Standalone
+    # spark-submit --class SparkSQL --name "SparkSQL alopez" target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar "2018-05-04 10:20" "2018-05-04 10:50" 12345
+    # Cluster
+    # spark-submit --class SparkSQL --master yarn --deploy-mode client --conf spark.dynamicAllocation.enabled=true --conf spark.shuffle.service.enabled=true --conf spark.dynamicAllocation.minExecutors=7 --conf spark.driver.cores=1 --conf spark.driver.memory=6g --conf spark.executor.memory=6g /home/alopez/proyecto/tfg_scalasparksql_2.11-0.1.jar "2018-05-04 10:20" "2018-05-04 10:50" 12345
+  @executed = 0
     if request.method == "POST"
       @startDate = params[:startDate].in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M")
       @endDate = params[:endDate].in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M")
       executionId = SecureRandom.uuid
-      if @execution = `spark-submit --class SparkSQL --name "EpochSelector" /home/alejandro/Documentos/TFG_ScalaSparkSQL/target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar "#{@startDate}" "#{@endDate}" #{executionId}`
+      if @execution = `spark-submit --class SparkSQL --name "TFG_RailsSparkSQL" /home/alejandro/Documentos/TFG_ScalaSparkSQL/target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar "#{@startDate}" "#{@endDate}" #{executionId}`
         @executed = 1
         if `hdfs dfs -get "/salida/#{executionId}/*.csv" #{Rails.root}/salida/#{executionId}.csv`
           if `hdfs dfs -rm -r /salida/#{executionId}`
             csvFile = File.read("#{Rails.root}/salida/#{executionId}.csv")
             CSV.parse(csvFile, { headers: true, col_sep: "," }).each do | row |
-              Speed.create ident: row[0].to_s, date: row[1].to_s, element: row[2].to_s, vmed: row[3].to_s, executionId: executionId
+              Speed.create ident: row[0].to_s, element: row[1].to_s, vmed: row[2].to_s, executionId: executionId
             end
             FileUtils.rm_rf("#{Rails.root}/salida/#{executionId}.csv")
             speedsRaw = Point.find_by_sql ["SELECT DISTINCT B.ident, B.name, B.x, B.y, A.vmed FROM speeds A INNER JOIN points B ON A.ident = B.ident WHERE A.executionId = ?", executionId]
@@ -30,8 +32,6 @@ class EpochesController < ApplicationController
           end
         end
       end
-      # GMaps Api-Key: AIzaSyCmlI7UDrPmPvyWoD6KGqAyo-X7TBjgXVA
-      # MapBox Api-Key: pk.eyJ1Ijoicm9raW1va2kiLCJhIjoiY2pvd3lyeHpnMHNqMjNwcnA3MjV3NmJlbiJ9.KJj3l-EQJgvvnmv_l7fU-Q
     end
   end
 
@@ -49,25 +49,28 @@ class EpochesController < ApplicationController
   end
 
   def dfs_test
-    # spark-submit --class SparkSQL --name "EpochSelector" /home/alejandro/Documentos/TFG_SparkSQL/target/scala-2.11/tfg_sparksql_2.11-0.1.jar
-    # spark-submit --master yarn --deply-mode cluster --class SparkSQL --name "EpochSelector" /home/alopez/proyecto/tfg_sparksql_2.11-0.1.jar
     @executed = 0
     @extracted = 0
     @deleted = 0
     @startDate = "2018-05-04 10:20"
-    @endDate = "2018-05-04 10:50"
+    @endDate = "2018-05-04 20:50"
     executionId = SecureRandom.uuid
-    if @execution = `spark-submit --class SparkSQL --name "EpochSelector" /home/alejandro/Documentos/TFG_ScalaSparkSQL/target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar "#{@startDate}" "#{@endDate}" #{executionId}`
+    if @execution = `spark-submit --class SparkSQL --name "TFG_RailsSparkSQL" /home/alejandro/Documentos/TFG_ScalaSparkSQL/target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar "#{@startDate}" "#{@endDate}" #{executionId}`
       @executed = 1
-      if `hdfs dfs -get "/salida/#{executionId}/*.csv" #{Rails.root}/salida/#{executionId}.csv`
+      if @extraction = `hdfs dfs -get "/salida/#{executionId}/*.csv" #{Rails.root}/salida/#{executionId}.csv`
         @extracted = 1
-        if `hdfs dfs -rm -r /salida/#{executionId}`
+        if @deletion = `hdfs dfs -rm -r /salida/#{executionId}`
           @deleted = 1
           csvFile = File.read("#{Rails.root}/salida/#{executionId}.csv")
           CSV.parse(csvFile, { headers: true, col_sep: "," }).each do | row |
-            Speed.create ident: row[0].to_s, date: row[1].to_s, element: row[2].to_s, vmed: row[3].to_s, executionId: executionId
+            Speed.create ident: row[0].to_s, element: row[1].to_s, vmed: row[2].to_s, executionId: executionId
           end
           FileUtils.rm_rf("#{Rails.root}/salida/#{executionId}.csv")
+          speedsRaw = Point.find_by_sql ["SELECT DISTINCT B.ident, B.name, B.x, B.y, A.vmed FROM speeds A INNER JOIN points B ON A.ident = B.ident WHERE A.executionId = ?", executionId]
+          @speeds = []
+          speedsRaw.each do |each|
+            @speeds << [each["ident"], each["name"], each["x"].to_f, each["y"].to_f, each["vmed"].to_f, @startDate, @endDate]
+          end
         end
       end
     end

@@ -37,7 +37,9 @@ object SparkSQL {
     println()
 
     val fs = FileSystem.get(sc.hadoopConfiguration)
-    @transient val filesVelocidadMedia = fs.listStatus(new Path("/datos.madrid.es_2018/VelocidadMedia"))
+    var hdfs_path = "/datos.madrid.es_2018/VelocidadMedia"
+
+    @transient val filesVelocidadMedia = fs.listStatus(new Path(hdfs_path))
 
     var selectedFileNameVelocidadMedia = ""
 
@@ -48,7 +50,7 @@ object SparkSQL {
         val filePattern = "(\\d{2})-(\\d{4})[.]csv".r
         val filePattern(fileMonth, fileYear) = fileName
         if (fileMonth.equals(startMonth)) {
-          selectedFileNameVelocidadMedia = "/datos.madrid.es_2018/VelocidadMedia/" + fileName
+          selectedFileNameVelocidadMedia = hdfs_path + "/" + fileName
           break
         }
       }
@@ -76,18 +78,16 @@ object SparkSQL {
     // Obtenemos la época fecha >= startDate && fecha <= endDate y agrupamos por id y tipo_elem
     df1.createOrReplaceTempView("VelocidadMedia")
     val sql1 = "SELECT id, " +
-                      "fecha, " +
                       "tipo_elem, " +
                 "ROUND(AVG(vmed), 2) AS vmed " +
                 "FROM VelocidadMedia " +
                 "WHERE vmed > 0 " +
                    "AND (fecha >= '" + startDate + "') " +
                    "AND (fecha <= '" + endDate + "') " +
-                "GROUP BY id, " +
-                          "tipo_elem," +
-                          "fecha " +
-                "ORDER BY id, " +
-                         "tipo_elem"
+                "GROUP BY id," +
+                          "tipo_elem " +
+                "ORDER BY id," +
+                          "tipo_elem"
     val resultSql1 = spark.sql(sql1)
     resultSql1.printSchema()
     resultSql1.show()
@@ -97,11 +97,12 @@ object SparkSQL {
 
     // Primero empaquetar la app con sbt package
 
+    // Lanzar App en Clúster
+    // spark-submit --class SparkSQL --master yarn --deploy-mode client --conf spark.dynamicAllocation.enabled=true --conf spark.shuffle.service.enabled=true --conf spark.dynamicAllocation.minExecutors=7 --conf spark.driver.cores=1 --conf spark.driver.memory=6g --conf spark.executor.memory=6g /home/alopez/proyecto/tfg_scalasparksql_2.11-0.1.jar "2018-05-04 10:20" "2018-05-04 10:50" 12345
+    // spark-submit --class SparkSQL --master yarn --deploy-mode client --conf spark.driver.cores=1 --conf spark.driver.memory=6g --conf spark.executor.memory=6g /home/alopez/proyecto/tfg_scalasparksql_2.11-0.1.jar "2018-05-04 10:20" "2018-05-04 10:50" 12345
+
     // Lanzar la APP spark stand-alone
     // spark-submit --class SparkSQL --name "SparkSQL alopez" target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar "2018-05-04 10:20" "2018-05-04 10:50" 12345
-
-    // Lanzar la APP sobre clúster Yarn (hadoop)
-    // spark-submit --master yarn --deply-mode cluster --class SparkSQL --name "TEST" target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar
   }
 
 }
