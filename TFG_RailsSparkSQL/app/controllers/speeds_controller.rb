@@ -1,3 +1,3 @@
 class SpeedsController < ApplicationController
-  
+
 end

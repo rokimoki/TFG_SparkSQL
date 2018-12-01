@@ -99,7 +99,6 @@ object SparkSQL {
 
     // Lanzar App en Clúster
     // spark-submit --class SparkSQL --master yarn --deploy-mode client --conf spark.dynamicAllocation.enabled=true --conf spark.shuffle.service.enabled=true --conf spark.dynamicAllocation.minExecutors=7 --conf spark.driver.cores=1 --conf spark.driver.memory=6g --conf spark.executor.memory=6g /home/alopez/proyecto/tfg_scalasparksql_2.11-0.1.jar "2018-05-04 10:20" "2018-05-04 10:50" 12345
-    // spark-submit --class SparkSQL --master yarn --deploy-mode client --conf spark.driver.cores=1 --conf spark.driver.memory=6g --conf spark.executor.memory=6g /home/alopez/proyecto/tfg_scalasparksql_2.11-0.1.jar "2018-05-04 10:20" "2018-05-04 10:50" 12345
 
     // Lanzar la APP spark stand-alone
     // spark-submit --class SparkSQL --name "SparkSQL alopez" target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar "2018-05-04 10:20" "2018-05-04 10:50" 12345

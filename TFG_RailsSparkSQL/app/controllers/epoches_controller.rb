@@ -15,7 +15,7 @@ class EpochesController < ApplicationController
       @startDate = params[:startDate].in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M")
       @endDate = params[:endDate].in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M")
       executionId = SecureRandom.uuid
-      if @execution = `spark-submit --class SparkSQL --name "TFG_RailsSparkSQL" /home/alejandro/Documentos/TFG_ScalaSparkSQL/target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar "#{@startDate}" "#{@endDate}" #{executionId}`
+      if @execution = `spark-submit --class SparkSQL --name "EpochSelector" /home/alejandro/Documentos/TFG_ScalaSparkSQL/target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar "#{@startDate}" "#{@endDate}" #{executionId}`
         @executed = 1
         if `hdfs dfs -get "/salida/#{executionId}/*.csv" #{Rails.root}/salida/#{executionId}.csv`
           if `hdfs dfs -rm -r /salida/#{executionId}`
@@ -27,7 +27,7 @@ class EpochesController < ApplicationController
             speedsRaw = Point.find_by_sql ["SELECT DISTINCT B.ident, B.name, B.x, B.y, A.vmed FROM speeds A INNER JOIN points B ON A.ident = B.ident WHERE A.executionId = ?", executionId]
             @speeds = []
             speedsRaw.each do |each|
-              @speeds << [each["ident"], each["name"], each["x"].to_f, each["y"].to_f, each["vmed"].to_f, @startDate, @endDate]
+              @speeds << [each["ident"], each["name"], each["x"].to_f, each["y"].to_f, each["vmed"].to_f]
             end
           end
         end
@@ -36,6 +36,9 @@ class EpochesController < ApplicationController
   end
 
   def map_test
+    @startDate = (Time.now - 4.months - 30.minutes).in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M")
+    @endDate = (Time.now - 4.months).in_time_zone("Europe/London").strftime("%Y-%m-%d %H:%M")
+    @execution = "Spark Execution Log"
     @coords = [["1001", "05FT10PM01", 437146.022667131, 4473498.17235059, 62.0],
               ["1001", "05FT10PM01", 437146.022667131, 4473498.17235059, 69.0],
               ["1002", "05FT37PM01", 436892.118105918, 4473311.64630953, 69.0],
@@ -55,7 +58,7 @@ class EpochesController < ApplicationController
     @startDate = "2018-05-04 10:20"
     @endDate = "2018-05-04 20:50"
     executionId = SecureRandom.uuid
-    if @execution = `spark-submit --class SparkSQL --name "TFG_RailsSparkSQL" /home/alejandro/Documentos/TFG_ScalaSparkSQL/target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar "#{@startDate}" "#{@endDate}" #{executionId}`
+    if @execution = `spark-submit --class SparkSQL --name "EpochSelector" /home/alejandro/Documentos/TFG_ScalaSparkSQL/target/scala-2.11/tfg_scalasparksql_2.11-0.1.jar "#{@startDate}" "#{@endDate}" #{executionId}`
       @executed = 1
       if @extraction = `hdfs dfs -get "/salida/#{executionId}/*.csv" #{Rails.root}/salida/#{executionId}.csv`
         @extracted = 1

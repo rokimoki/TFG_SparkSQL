@@ -1,20 +1,31 @@
-<p>
-  <div id="mapa_madrid"></div>
-</p>
+<div class="contenedor">
+  <div class="epocas">
+    <div class="alert alert-primary" role="alert">
+      <h2>Época seleccionada</h2>
+      Desde <strong><%= @startDate.to_datetime.strftime("%d/%m/%Y %H:%M") %></strong> hasta <strong><%= @endDate.to_datetime.strftime("%d/%m/%Y %H:%M") %></strong>
+      <br>
+      Tiempo <strong><%= ((@endDate.to_datetime - @startDate.to_datetime) * 24 * 60).to_i %></strong> minutos
+    </div>
+    <br>
+  </div>
+  <div id="mapa_madrid" class="izquierda"></div>
+  <div class="derecha shadow p-3 mb-5 bg-white rounded">
+    <p>Leyenda</p>
+    <div id="leyenda"></div>
+  </div>
+  <div class="separador"></div>
+</div>
 <script>
-    var mapa;
-
     var coords = <%= raw @coords %>;
 
-    var projections = {
-        wgs84: "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
-        ETRS89: "+proj=utm +zone=30 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-    };
-
     function initMap() {
-        var centroMadrid = { lat:40.395734, lng:-3.6701306 };
+        // Primero arreglamos la leyenda
+        loadLeyend();
+
+        // Cargamos el mapa
+        var centroMadrid = { lat: 40.4428378, lng: -3.6865051 };
         mapa = new google.maps.Map(document.getElementById('mapa_madrid'), {
-            zoom: 10.75,
+            zoom: 12,
             center: centroMadrid
         });
         coords.forEach(function(each) {
@@ -23,22 +34,15 @@
         });
     }
 
-    function addMarker(lat, lon, elementId, elementName, avgSpeed) {
-        var htmlDescription = "<p>Sensor: " + elementName + "</p>"+
-                              "<p>Id: " + elementId + "</p>" +
-                              "<p>Velocidad media: <strong>" + avgSpeed + "</strong></p>";
-        var infoWindow = new google.maps.InfoWindow({
-            content: htmlDescription
-        });
-        var marker = new google.maps.Marker({
-            position: { lat: lat, lng: lon },
-            map: mapa,
-            title: "Sensor: " + elementName
-        });
-        marker.addListener('click', function() {
-           infoWindow.open(mapa, marker);
-        });
-    }
-
     google.maps.event.addDomListener(window, 'load', initMap);
 </script>
+<div class="logEjecucion">
+  <a class="btn btn-primary" data-toggle="collapse" href="#executionLog" role="button" aria-expanded="false" aria-controls="executionLog">
+    Log de ejecución
+  </a>
+  <div class="collapse logEjecucion" id="executionLog">
+    <div class="card card-body">
+      <pre><%= @execution %></pre>
+    </div>
+  </div>
+</div>

@@ -13,7 +13,37 @@
  *= require_self
  */
 #mapa_madrid {
-    width: 800px;
-    height: 600px;
+    width: 900px;
+    height: 650px;
     margin: 0 auto;
+}
+
+.izquierda {
+    float: left;
+}
+
+.derecha {
+    float: left;
+    margin-left: 40px;
+    margin-top: 50px;
+}
+
+.separador {
+    clear: both;
+}
+
+.leyendaCasilla {
+    float: left;
+    margin-top: 3px;
+    width: 15px;
+    height: 15px;
+}
+
+.leyendaDato {
+    float: left;
+    margin-left: 5px;
+}
+
+.logEjecucion {
+    margin-top: 20px;
 }
