@@ -14,3 +14,5 @@
 ### En este repositorio se encuentra el código de prueba que se ejecuta en el clúster y la aplicación Web.
 
 Autor: Alejandro López Santos
+
+### DEPRECATED PROJECT
